@@ -1,10 +1,11 @@
 package com.example.crudSpringBootDemo.controller;
 
+import com.example.crudSpringBootDemo.dto.StudentRequestDTO;
+import com.example.crudSpringBootDemo.dto.StudentResponseDto;
 import com.example.crudSpringBootDemo.entity.Student;
 import com.example.crudSpringBootDemo.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +20,11 @@ public class StudentController {
     }
 
     //create student
-    @PostMapping
-    public ResponseEntity<Student>  createStudent(@RequestBody Student student){
+    @PostMapping("/create")
+    public ResponseEntity<StudentResponseDto> createStudent(
+            @RequestBody StudentRequestDTO studentRequestDto){
 
-        Student createdStudent = studentService.createStudent(student);
+        StudentResponseDto createdStudent = studentService.createStudent(studentRequestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(createdStudent);
@@ -34,7 +36,7 @@ public class StudentController {
         Student studentResp=studentService.getStudent(id);
 
         if(studentResp==null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity
@@ -79,4 +81,17 @@ public class StudentController {
         }
         return ResponseEntity.ok("Record deleted");
     }
+
+    @PatchMapping("/delete-soft")
+    public ResponseEntity<String> deleteStudentSoftly(@RequestParam Long id) {
+        Boolean isDeleted = studentService.deleteStudentSoftly(id);
+
+        if(!isDeleted) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok("Record deleted");
+    }
+
+
 }

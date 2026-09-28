@@ -1,12 +1,15 @@
 package com.example.crudSpringBootDemo.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Student {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
@@ -14,7 +17,10 @@ public class Student {
     private int age;
     private String email;
     private int rollNo;
-
+    private String subject;
+    private Boolean deleted;
+    private String createdAt;
+    private String updatedAt;
 
     public Long getId() {
         return id;
@@ -64,5 +70,27 @@ public class Student {
         this.subject = subject;
     }
 
-    private String subject;
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

@@ -1,6 +1,6 @@
 package com.example.crudSpringBootDemo.dto;
 
-public class RequestDTO {
+public class StudentRequestDTO {
 
     private String name;
     private int age;

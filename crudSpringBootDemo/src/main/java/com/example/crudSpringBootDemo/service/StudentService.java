@@ -1,5 +1,7 @@
 package com.example.crudSpringBootDemo.service;
 
+import com.example.crudSpringBootDemo.dto.StudentRequestDTO;
+import com.example.crudSpringBootDemo.dto.StudentResponseDto;
 import com.example.crudSpringBootDemo.entity.Student;
 import com.example.crudSpringBootDemo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,11 @@ public class StudentService {
         this.studentRepository=studentRepository;
     }
 
-    public Student createStudent(Student studentReq){
+    public StudentResponseDto createStudent(StudentRequestDTO studentReqDto){
+        Student student=mapToEntity(studentReqDto);
 
-        Student studentResp = studentRepository.save(studentReq);
-        return studentResp;
+        Student studentResp=studentRepository.save(student);
+        return mapToDto(studentResp);
     }
 
     public Student getStudent(Long id){
@@ -34,18 +37,20 @@ public class StudentService {
 
     public List<Student> getAllStudent(){
 
-        List<Student> studentList=studentRepository.findAll();
+        List<Student> studentList=studentRepository.findByDeletedIsFalse();
         return studentList;
 
     }
 
     public Student updateStudent(Long id,Student studentReq){
-        Optional<Student> existingStudent=studentRepository.findById(id);
+        Optional<Student> existingStudent=studentRepository.findByIdAndDeletedIsFalse(id);
+
         if(existingStudent.isEmpty()){
             return null;
         }
 
         Student studentToSave=existingStudent.get();
+
         studentToSave.setName(studentReq.getName());
         studentToSave.setRollNo(studentReq.getRollNo());
         studentToSave.setSubject(studentReq.getSubject());
@@ -65,5 +70,45 @@ public class StudentService {
         return true;
     }
 
+    public boolean deleteStudentSoftly(Long id){
+        Optional<Student> existingStudent =
+                studentRepository.findByIdAndDeletedIsFalse(id);
+
+        if(existingStudent.isEmpty()) {
+            return false;
+        }
+
+        Student studentToSave = existingStudent.get();
+        studentToSave.setDeleted(true);
+        studentRepository.save(studentToSave);
+
+        return true;
+    }
+
+    private Student mapToEntity(StudentRequestDTO studentRequestDTO){
+        Student student=new Student();
+
+        student.setName(studentRequestDTO.getName());
+        student.setAge(studentRequestDTO.getAge());
+        student.setEmail(studentRequestDTO.getEmail());
+        student.setRollNo(studentRequestDTO.getRollNo());
+        student.setSubject(studentRequestDTO.getSubject());
+
+        student.setDeleted(false);
+        return  student;
+    }
+    private StudentResponseDto mapToDto(Student student){
+        StudentResponseDto responseDto=new StudentResponseDto();
+
+        responseDto.setId(student.getId());
+        responseDto.setName(student.getName());
+        responseDto.setAge(student.getAge());
+        responseDto.setEmail(student.getEmail());
+        responseDto.setRollNo(student.getRollNo());
+        responseDto.setSubject(student.getSubject());
+        responseDto.setMessage("Student saved successfully");
+
+        return responseDto;
+    }
 }
 
